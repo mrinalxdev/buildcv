@@ -52,7 +52,7 @@ export function FlowEditor() {
 
   const handleProcess = () => {
     console.log('Processing nodes:', nodes);
-    console.log('Connections:', edges);
+    console.log('Connections of the workflow :', edges);
   };
 
   return (
