@@ -22,7 +22,7 @@ export interface NodeType {
   category: string;
   params: {
     name: string;
-    type: 'number' | 'select' | 'boolean';
+    type: 'number' | 'select' | 'boolean' | 'text';
     options?: string[];
     default: any;
   }[];

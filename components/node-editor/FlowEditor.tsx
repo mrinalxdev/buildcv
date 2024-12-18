@@ -8,14 +8,13 @@ import { Toolbar } from './Toolbar';
 import { UserProfile } from './UserProfile';
 import { useNodeEditor } from '@/lib/hooks/useNodeEditor';
 import { useFlowPersistence } from '@/lib/hooks/useFlowPersistence';
+import { useEffect } from 'react';
 
-// Dynamically import ReactFlow components
 const ReactFlow = dynamic(() => import('reactflow').then((mod) => mod.default), { ssr: false });
 const Background = dynamic(() => import('reactflow').then((mod) => mod.Background), { ssr: false });
 const Controls = dynamic(() => import('reactflow').then((mod) => mod.Controls), { ssr: false });
 const Panel = dynamic(() => import('reactflow').then((mod) => mod.Panel), { ssr: false });
 
-// Import styles only on client side
 if (typeof window !== 'undefined') {
   import('reactflow/dist/style.css');
 }
@@ -33,7 +32,23 @@ export function FlowEditor() {
     handleParamChange,
   } = useNodeEditor();
 
-  const { handleSave, handleLoad } = useFlowPersistence();
+  const { handleSave, handleLoad, saveToLocalStorage, loadFromLocalStorage } = useFlowPersistence();
+
+  // loading the data 
+  // todo : Finish dinner and work getting and setting the data
+  useEffect(() => {
+    const savedFlow = loadFromLocalStorage();
+    if (savedFlow){
+      setNodes(savedFlow.nodes);
+      setEdges(savedFlow.edges)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (nodes.length > 0 || edges.length > 0){
+      saveToLocalStorage(nodes, edges)
+    }
+  }, [nodes, edges])
 
   const handleProcess = () => {
     console.log('Processing nodes:', nodes);

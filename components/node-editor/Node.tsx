@@ -12,6 +12,9 @@ export function Node({ data, id }: { data: any; id: string }) {
   const nodeConfig = nodeTypes[data.type];
   if (!nodeConfig) return null;
 
+  const handleParamChange = (paramName: string, value: any) => {
+    data.handleParamChange(id, paramName, value);
+  };
 
   return (
     <Card className="w-[280px] shadow-md">
@@ -26,9 +29,7 @@ export function Node({ data, id }: { data: any; id: string }) {
               <div className="flex gap-2">
                 <Input
                   value={data.params[param.name] || ''}
-                  onChange={(e) =>
-                    data.handleParamChange(id, param.name, e.target.value)
-                  }
+                  onChange={(e) => data.handleParamChange(param.name, e.target.value)}
                   placeholder="Enter image URL"
                 />
                 {param.name === 'imageUrl' && data.params[param.name] && (
@@ -40,9 +41,7 @@ export function Node({ data, id }: { data: any; id: string }) {
               <Input
                 type="number"
                 value={data.params[param.name]}
-                onChange={(e) =>
-                  data.handleParamChange(id, param.name, Number(e.target.value))
-                }
+                onChange={(e) => data.handleParamChange(param.name, Number(e.target.value))}
                 min={param.min}
                 max={param.max}
                 step={param.step}
@@ -51,12 +50,10 @@ export function Node({ data, id }: { data: any; id: string }) {
             {param.type === 'select' && (
               <Select
                 value={data.params[param.name]}
-                onValueChange={(value) =>
-                  data.handleParamChange(id, param.name, value)
-                }
+                onValueChange={(value) => data.handleParamChange(param.name, value)}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder={`Select ${param.name}`} />
                 </SelectTrigger>
                 <SelectContent>
                   {param.options?.map((option) => (
@@ -69,8 +66,6 @@ export function Node({ data, id }: { data: any; id: string }) {
             )}
           </div>
         ))}
-
-        {/* Input/Output Handles */}
         {nodeConfig.inputs.map((input, index) => (
           <Handle
             key={`input-${index}`}

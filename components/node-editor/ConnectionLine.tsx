@@ -10,12 +10,10 @@ export function ConnectionLine({
   toY,
   toPosition,
 }: ConnectionLineComponentProps) {
-  // Calculate the path for a smooth curve
   const deltaX = toX - fromX;
   const deltaY = toY - fromY;
   const controlPointX = fromX + deltaX * 0.5;
 
-  // Create an S-curve path
   const path = `M${fromX},${fromY} C${controlPointX},${fromY} ${controlPointX},${toY} ${toX},${toY}`;
 
   return (
