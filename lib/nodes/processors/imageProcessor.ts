@@ -14,17 +14,14 @@ export async function processImage(nodes: NodeData[], connections: Connection[],
     const node = nodes.find(n => n.id === nodeId);
     if (!node) return null;
 
-    // Get input connections for this node
     const inputConnections = connections.filter(c => c.target === nodeId);
     
-    // Process all input nodes first
     const inputs = await Promise.all(
       inputConnections.map(async conn => {
         return await processNode(conn.source);
       })
     );
 
-    // Process current node based on its type
     let result: ImageData | null = null;
     
     switch (node.type) {
@@ -63,7 +60,6 @@ export async function processImage(nodes: NodeData[], connections: Connection[],
   return processNode(startNodeId);
 }
 
-// Helper functions for image processing
 async function loadImageData(url: string): Promise<ImageData> {
   const img = new Image();
   img.src = url;
@@ -87,8 +83,7 @@ async function applyGrayscale(imageData: ImageData): Promise<ImageData> {
 }
 
 async function applyBlur(imageData: ImageData, params: any): Promise<ImageData> {
-  // Implement Gaussian blur
-  // This is a simplified version - you'd want to implement a proper Gaussian blur
+  // Implement Gaussian blur logic after lunch 
   return imageData; // Placeholder
 }
 
