@@ -134,87 +134,246 @@
     */
 }
 
+//component/node-editor/ComparisonDialog.tsx
+// import { Dialog, DialogContent } from "@radix-ui/react-dialog";
+// import { DialogHeader, DialogTitle } from "../ui/dialog";
+// import { Button } from "../ui/button";
+// import { Download } from "lucide-react";
+
+// interface ComparisonDialogProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   inputImage: string | null;
+//   outputImage: string | null;
+// }
+
+// const ComparisonDialog = ({
+//   isOpen,
+//   onClose,
+//   inputImage,
+//   outputImage,
+// }: ComparisonDialogProps) => {
+//   const handleDownload = (imageUrl: string, prefix: string) => {
+//     const link = document.createElement("a");
+//     link.href = imageUrl;
+//     link.download = `${prefix} - ${new Date().getTime()}.png`;
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//   };
+//   return (
+//     <Dialog open={isOpen} onOpenChange={onClose}>
+//       <DialogContent className="max-w-4xl">
+//         <DialogHeader>
+//           <DialogTitle>Image Processing Result</DialogTitle>
+//         </DialogHeader>
+//         <div className="grid grid-cols-2 gap-4">
+//           <div className="space-y-2">
+//             <h1 className="font-title">Input Image</h1>
+//             {inputImage ? (
+//               <div className="relative group">
+//                 <img
+//                   src={inputImage}
+//                   className="w-full h-auto rounded-lg border"
+//                   alt=""
+//                 />
+//                 <Button
+//                   size="icon"
+//                   variant="secondary"
+//                   className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+//                 >
+//                   <Download className="h-4 w-4" />
+//                 </Button>
+//               </div>
+//             ) : (
+//               <div className="flex items-center justify-center h-48 bg-muted rounded-lg">
+//                 No Input Image
+//               </div>
+//             )}
+//           </div>
+//           <div className="space-y-2">
+//             <h1 className="font-title">Ouput Image</h1>
+//             {outputImage ? (
+//               <div className="relative group">
+//                 <img
+//                   src={outputImage}
+//                   className="w-full h-auto rounded-lg border"
+//                   alt=""
+//                 />
+//                 <Button
+//                   size="icon"
+//                   variant="secondary"
+//                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+//                   onClick={() => handleDownload(outputImage, 'output')}
+//                 >
+//                     <Download className="h-4 w-4" />
+//                 </Button>
+//               </div>
+//             ) : (
+//               <div className="flex items-center justify-center h-48 bg-muted rounded-lg">
+//                 Processing failed
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// };
+
+// export default ComparisonDialog;
+
+
 //components/node-editor/FlowEditor.tsx
-{
-  /*
+// "use client";
 
-    'use client';
+// import dynamic from "next/dynamic";
+// import { ReactFlowProvider } from "reactflow";
+// import { nodeTypes } from "./NodeTypes";
+// import { ConnectionLine } from "./ConnectionLine";
+// import { Toolbar } from "./Toolbar";
+// import { UserProfile } from "./UserProfile";
+// import { useNodeEditor } from "@/lib/hooks/useNodeEditor";
+// import { useFlowPersistence } from "@/lib/hooks/useFlowPersistence";
+// import { useEffect, useState } from "react";
+// import { toast, useToast } from "@/hooks/use-toast";
+// import { processImage } from "@/lib/nodes/processors/imageProcessor";
+// import ComparisonDialog from "./ComparisonDialog";
 
-import dynamic from 'next/dynamic';
-import { ReactFlowProvider } from 'reactflow';
-import { nodeTypes } from './NodeTypes';
-import { ConnectionLine } from './ConnectionLine';
-import { Toolbar } from './Toolbar';
-import { UserProfile } from './UserProfile';
-import { useNodeEditor } from '@/lib/hooks/useNodeEditor';
-import { useFlowPersistence } from '@/lib/hooks/useFlowPersistence';
+// const ReactFlow = dynamic(
+//   () => import("reactflow").then((mod) => mod.default),
+//   { ssr: false }
+// );
+// const Background = dynamic(
+//   () => import("reactflow").then((mod) => mod.Background),
+//   { ssr: false }
+// );
+// const Controls = dynamic(
+//   () => import("reactflow").then((mod) => mod.Controls),
+//   { ssr: false }
+// );
+// const Panel = dynamic(() => import("reactflow").then((mod) => mod.Panel), {
+//   ssr: false,
+// });
 
-// Dynamically import ReactFlow components
-const ReactFlow = dynamic(() => import('reactflow').then((mod) => mod.default), { ssr: false });
-const Background = dynamic(() => import('reactflow').then((mod) => mod.Background), { ssr: false });
-const Controls = dynamic(() => import('reactflow').then((mod) => mod.Controls), { ssr: false });
-const Panel = dynamic(() => import('reactflow').then((mod) => mod.Panel), { ssr: false });
+// if (typeof window !== "undefined") {
+//   import("reactflow/dist/style.css");
+// }
 
-// Import styles only on client side
-if (typeof window !== 'undefined') {
-  import('reactflow/dist/style.css');
-}
+// export function FlowEditor() {
+//   const [isProcessing, setIsProcessing] = useState(false);
+//   const [showComparison, setShowComparison] = useState(false);
+//   const [porcessedImages, setProcessedImages] = useState<{
+//     inputImage: string | null;
+//     outputImage: string | null;
+//   }>({ inputImage: null, outputImage: null });
 
-export function FlowEditor() {
-  const {
-    nodes,
-    edges,
-    setNodes,
-    setEdges,
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-    handleAddNode,
-    handleParamChange,
-  } = useNodeEditor();
+//   const { toast } = useToast();
 
-  const { handleSave, handleLoad } = useFlowPersistence();
+//   const {
+//     nodes,
+//     edges,
+//     setNodes,
+//     setEdges,
+//     onNodesChange,
+//     onEdgesChange,
+//     onConnect,
+//     handleAddNode,
+//     handleParamChange,
+//   } = useNodeEditor();
 
-  const handleProcess = () => {
-    console.log('Processing nodes:', nodes);
-    console.log('Connections:', edges);
-  };
+//   const { handleSave, handleLoad, saveToLocalStorage, loadFromLocalStorage } =
+//     useFlowPersistence();
 
-  return (
-    <div className="w-full h-screen bg-background">
-      <ReactFlowProvider>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          connectionLineComponent={ConnectionLine}
-          fitView
-          className="bg-muted/50"
-        >
-          <Background />
-          <Controls />
-          <Panel position="top" className="w-full flex justify-center p-2">
-            <Toolbar
-              onAddNode={handleAddNode}
-              onProcess={handleProcess}
-              onSave={() => handleSave(nodes, edges)}
-              onLoad={() => handleLoad((nodes, edges) => {
-                setNodes(nodes);
-                setEdges(edges);
-              })}
-            />
-          </Panel>
-        </ReactFlow>
-        <UserProfile />
-      </ReactFlowProvider>
-    </div>
-  );
-}
-    */
-}
+//   // loading the data
+//   // todo : Finish dinner and work getting and setting the data
+//   useEffect(() => {
+//     const savedFlow = loadFromLocalStorage();
+//     if (savedFlow) {
+//       setNodes(savedFlow.nodes);
+//       setEdges(savedFlow.edges);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (nodes.length > 0 || edges.length > 0) {
+//       saveToLocalStorage(nodes, edges);
+//     }
+//   }, [nodes, edges]);
+
+//   const handleProcess = async () => {
+//     try {
+//       setIsProcessing(true);
+
+//       const inputNode = nodes.find((n) => n.type === "imageInput");
+//       if (!inputNode) {
+//         throw new Error("No input node found in the worflow");
+//       }
+//       if (!inputNode.data.params.imageurl) {
+//         throw new Error("Please provide an input image URL");
+//       }
+
+//       const result = await processImage(nodes, edges);
+//       setProcessedImages(result);
+//       setShowComparison(true);
+//     } catch (error) {
+//       toast({
+//         title: "Processing Error",
+//         description:
+//           error instanceof Error
+//             ? error.message
+//             : "An error occurred during processing",
+//         variant: "destructive",
+//       });
+//     } finally {
+//       setIsProcessing(false);
+//     }
+//   };
+
+//   return (
+//     <div className="w-full h-screen bg-background">
+//       <ReactFlowProvider>
+//         <ReactFlow
+//           nodes={nodes}
+//           edges={edges}
+//           onNodesChange={onNodesChange}
+//           onEdgesChange={onEdgesChange}
+//           onConnect={onConnect}
+//           nodeTypes={nodeTypes}
+//           connectionLineComponent={ConnectionLine}
+//           fitView
+//           className="bg-muted/50"
+//         >
+//           <Background />
+//           <Controls />
+//           <Panel position="top" className="w-full flex justify-center p-2">
+//             <Toolbar
+//               onAddNode={handleAddNode}
+//               onProcess={handleProcess}
+//               onSave={() => handleSave(nodes, edges)}
+//               onLoad={() =>
+//                 handleLoad((nodes, edges) => {
+//                   setNodes(nodes);
+//                   setEdges(edges);
+//                 })
+//               }
+//               isProcessing={isProcessing}
+//             />
+//           </Panel>
+//         </ReactFlow>
+//         <UserProfile />
+//         <ComparisonDialog
+//           isOpen={showComparison}
+//           onClose={() => setShowComparison(false)}
+//           inputImage={porcessedImages.inputImage}
+//           outputImage={porcessedImages.outputImage}
+//         />
+//       </ReactFlowProvider>
+//     </div>
+//   );
+// }
+
+
 
 //components/node-editor/ImagePreview.tsx
 
@@ -262,8 +421,9 @@ export function ImagePreview({ url }: ImagePreviewProps) {
 
 // components/node-editor/Node.tsx
 {
-    /*
-    'use client';
+   /*
+
+   'use client';
 
 import { Handle, Position } from 'reactflow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -277,6 +437,9 @@ export function Node({ data, id }: { data: any; id: string }) {
   const nodeConfig = nodeTypes[data.type];
   if (!nodeConfig) return null;
 
+  const handleParamChange = (paramName: string, value: any) => {
+    data.handleParamChange(id, paramName, value);
+  };
 
   return (
     <Card className="w-[280px] shadow-md">
@@ -291,9 +454,7 @@ export function Node({ data, id }: { data: any; id: string }) {
               <div className="flex gap-2">
                 <Input
                   value={data.params[param.name] || ''}
-                  onChange={(e) =>
-                    data.handleParamChange(id, param.name, e.target.value)
-                  }
+                  onChange={(e) => handleParamChange(param.name, e.target.value)}
                   placeholder="Enter image URL"
                 />
                 {param.name === 'imageUrl' && data.params[param.name] && (
@@ -305,9 +466,7 @@ export function Node({ data, id }: { data: any; id: string }) {
               <Input
                 type="number"
                 value={data.params[param.name]}
-                onChange={(e) =>
-                  data.handleParamChange(id, param.name, Number(e.target.value))
-                }
+                onChange={(e) => handleParamChange(param.name, Number(e.target.value))}
                 min={param.min}
                 max={param.max}
                 step={param.step}
@@ -316,12 +475,10 @@ export function Node({ data, id }: { data: any; id: string }) {
             {param.type === 'select' && (
               <Select
                 value={data.params[param.name]}
-                onValueChange={(value) =>
-                  data.handleParamChange(id, param.name, value)
-                }
+                onValueChange={(value) => handleParamChange(param.name, value)}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder={`Select ${param.name}`} />
                 </SelectTrigger>
                 <SelectContent>
                   {param.options?.map((option) => (
@@ -335,30 +492,31 @@ export function Node({ data, id }: { data: any; id: string }) {
           </div>
         ))}
         {nodeConfig.inputs.map((input, index) => (
-            <Handle
-              key={`input-${index}`}
-              type="target"
-              position={Position.Left}
-              id={input}
-              style={{ top: `${(index + 1) * 25}%` }}
-              className="w-3 h-3 bg-primary border-2 border-background"
-            />
-          ))}
-          {nodeConfig.outputs.map((output, index) => (
-            <Handle
-              key={`output-${index}`}
-              type="source"
-              position={Position.Right}
-              id={output}
-              style={{ top: `${(index + 1) * 25}%` }}
-              className="w-3 h-3 bg-primary border-2 border-background"
-            />
-          ))}
-        </CardContent>
-      </Card>
-    );
-  }
-    */
+          <Handle
+            key={`input-${index}`}
+            type="target"
+            position={Position.Left}
+            id={input}
+            style={{ top: `${(index + 1) * 25}%` }}
+            className="w-3 h-3 bg-primary border-2 border-background"
+          />
+        ))}
+        {nodeConfig.outputs.map((output, index) => (
+          <Handle
+            key={`output-${index}`}
+            type="source"
+            position={Position.Right}
+            id={output}
+            style={{ top: `${(index + 1) * 25}%` }}
+            className="w-3 h-3 bg-primary border-2 border-background"
+          />
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+   */
 }
 
 // components/node-editor/NodeTypes.ts
@@ -419,92 +577,104 @@ export function Preview({ processing, preview }: PreviewProps) {
 
 //components/node-editor/Toolbar.tsx
 
-{
-    /*
+// "use client";
 
-    'use client';
+// import { Button } from "@/components/ui/button";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuGroup,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { nodeTypes } from "@/lib/nodes/nodeTypes";
+// import { Plus, Play, Save, Upload, Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { nodeTypes } from '@/lib/nodes/nodeTypes';
-import { Plus, Play, Save, Upload } from 'lucide-react';
+// interface ToolbarProps {
+//   onAddNode: (type: string) => void;
+//   onProcess: () => void;
+//   onSave: () => void;
+//   onLoad: () => void;
+//   isProcessing: boolean;
+// }
 
-interface ToolbarProps {
-  onAddNode: (type: string) => void;
-  onProcess: () => void;
-  onSave: () => void;
-  onLoad: () => void;
-}
+// export function Toolbar({
+//   onAddNode,
+//   onProcess,
+//   onSave,
+//   onLoad,
+//   isProcessing,
+// }: ToolbarProps) {
+//   // Group nodes by category
+//   const nodesByCategory = Object.entries(nodeTypes).reduce(
+//     (acc, [key, node]) => {
+//       if (!acc[node.category]) {
+//         acc[node.category] = [];
+//       }
+//       acc[node.category].push({ type: key, ...node });
+//       return acc;
+//     },
+//     {} as Record<string, any[]>
+//   );
 
-export function Toolbar({ onAddNode, onProcess, onSave, onLoad }: ToolbarProps) {
-  // Group nodes by category
-  const nodesByCategory = Object.entries(nodeTypes).reduce(
-    (acc, [key, node]) => {
-      if (!acc[node.category]) {
-        acc[node.category] = [];
-      }
-      acc[node.category].push({ type: key, ...node });
-      return acc;
-    },
-    {} as Record<string, any[]>
-  );
+//   return (
+//     <div className="flex gap-2 bg-card p-2 rounded-lg shadow-sm">
+//       <DropdownMenu>
+//         <DropdownMenuTrigger asChild>
+//           <Button variant="outline" size="sm">
+//             <Plus className="h-4 w-4 mr-2" />
+//             Add Node
+//           </Button>
+//         </DropdownMenuTrigger>
+//         <DropdownMenuContent className="w-56">
+//           {Object.entries(nodesByCategory).map(([category, nodes]) => (
+//             <div key={category}>
+//               <DropdownMenuLabel>{category}</DropdownMenuLabel>
+//               <DropdownMenuGroup>
+//                 {nodes.map((node) => (
+//                   <DropdownMenuItem
+//                     key={node.type}
+//                     onClick={() => onAddNode(node.type)}
+//                   >
+//                     {node.label}
+//                   </DropdownMenuItem>
+//                 ))}
+//               </DropdownMenuGroup>
+//               <DropdownMenuSeparator />
+//             </div>
+//           ))}
+//         </DropdownMenuContent>
+//       </DropdownMenu>
 
-  return (
-    <div className="flex gap-2 bg-card p-2 rounded-lg shadow-sm">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Node
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          {Object.entries(nodesByCategory).map(([category, nodes]) => (
-            <div key={category}>
-              <DropdownMenuLabel>{category}</DropdownMenuLabel>
-              <DropdownMenuGroup>
-                {nodes.map((node) => (
-                  <DropdownMenuItem
-                    key={node.type}
-                    onClick={() => onAddNode(node.type)}
-                  >
-                    {node.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-            </div>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+//       <Button
+//         variant="default"
+//         size="sm"
+//         onClick={onProcess}
+//         disabled={isProcessing}
+//       >
+//         {isProcessing ? (
+//           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+//         ) : (
+//           <Play className="h-4 w-4 mr-2" />
+//         )}
+//         Process
+//       </Button>
 
-      <Button variant="default" size="sm" onClick={onProcess}>
-        <Play className="h-4 w-4 mr-2" />
-        Process
-      </Button>
+//       <Button variant="outline" size="sm" onClick={onSave}>
+//         <Save className="h-4 w-4 mr-2" />
+//         Save
+//       </Button>
 
-      <Button variant="outline" size="sm" onClick={onSave}>
-        <Save className="h-4 w-4 mr-2" />
-        Save
-      </Button>
+//       <Button variant="outline" size="sm" onClick={onLoad}>
+//         <Upload className="h-4 w-4 mr-2" />
+//         Load
+//       </Button>
+//     </div>
+//   );
+// }
 
-      <Button variant="outline" size="sm" onClick={onLoad}>
-        <Upload className="h-4 w-4 mr-2" />
-        Load
-      </Button>
-    </div>
-  );
-}
-    */
-}
 
 //components/node-editor/UserProfile.tsx
 // 'use client';
@@ -560,33 +730,43 @@ export function Toolbar({ onAddNode, onProcess, onSave, onLoad }: ToolbarProps) 
 
 // "use client";
 
-// import { Node, Edge } from "reactflow";
-// import { useEffect } from "react";
+// 'use client';
 
-// const STORAGE_KEY = "opencv-flow-state";
+// import { Node, Edge } from 'reactflow';
+// import { useEffect } from 'react';
+
+// const STORAGE_KEY = 'opencv-flow-state';
 
 // export function useFlowPersistence() {
 //   const handleSave = (nodes: Node[], edges: Edge[]) => {
+//     // Save to file
 //     const flow = { nodes, edges };
 //     const json = JSON.stringify(flow);
-//     const blob = new Blob([json], { type: "application/json" });
+//     const blob = new Blob([json], { type: 'application/json' });
 //     const url = URL.createObjectURL(blob);
-//     const link = document.createElement("a");
+//     const link = document.createElement('a');
 //     link.href = url;
-//     link.download = "opencv-flow.json";
+//     link.download = 'opencv-flow.json';
 //     link.click();
+
+//     // Also save to localStorage
+//     saveToLocalStorage(nodes, edges);
 //   };
 
-//   const handleLoad = (callback: (nodes: Node[], edges: Edge[]) => void) => {
-//     const input = document.createElement("input");
-//     input.type = "file";
-//     input.accept = ".json";
+//   const handleLoad = (
+//     callback: (nodes: Node[], edges: Edge[]) => void
+//   ) => {
+//     const input = document.createElement('input');
+//     input.type = 'file';
+//     input.accept = '.json';
 //     input.onchange = (e: any) => {
 //       const file = e.target.files[0];
 //       const reader = new FileReader();
 //       reader.onload = (e) => {
 //         const flow = JSON.parse(e.target?.result as string);
 //         callback(flow.nodes, flow.edges);
+//         // Also save to localStorage when loading from file
+//         saveToLocalStorage(flow.nodes, flow.edges);
 //       };
 //       reader.readAsText(file);
 //     };
@@ -598,10 +778,10 @@ export function Toolbar({ onAddNode, onProcess, onSave, onLoad }: ToolbarProps) 
 //     localStorage.setItem(STORAGE_KEY, JSON.stringify(flow));
 //   };
 
-//   const loadFromLocalStorage = () : { nodes : Node[]; edges : Edge[]; } | null => {
+//   const loadFromLocalStorage = (): { nodes: Node[]; edges: Edge[]; } | null => {
 //     const saved = localStorage.getItem(STORAGE_KEY);
 //     return saved ? JSON.parse(saved) : null;
-//   }
+//   };
 
 //   return {
 //     handleSave,
@@ -612,6 +792,8 @@ export function Toolbar({ onAddNode, onProcess, onSave, onLoad }: ToolbarProps) 
 // }
 
 //lib/hooks/useImageProcessing.ts
+// 'use client';
+
 // 'use client';
 
 // import { useState } from 'react';

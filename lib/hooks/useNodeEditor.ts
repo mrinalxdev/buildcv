@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 import {
   Node,
   Edge,
@@ -11,8 +9,8 @@ import {
   OnNodesChange,
   OnEdgesChange,
   OnConnect,
-} from 'reactflow';
-import { nodeTypes } from '@/lib/nodes/nodeTypes';
+} from "reactflow";
+import { nodeTypes } from "@/lib/nodes/nodeTypes";
 
 export function useNodeEditor() {
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -33,48 +31,52 @@ export function useNodeEditor() {
     []
   );
 
-  const handleAddNode = useCallback((type: string) => {
-    const nodeConfig = nodeTypes[type];
-    if (!nodeConfig) return;
+  const handleParamChange = useCallback(
+    (nodeId: string, paramName: string, value: any) => {
+      setNodes((nodes) =>
+        nodes.map((node) =>
+          node.id === nodeId
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  params: { ...node.data.params, [paramName]: value },
+                },
+              }
+            : node
+        )
+      );
+    },
+    []
+  );
 
-    const defaultParams = nodeConfig.params.reduce((acc, param) => {
-      acc[param.name] = param.default;
-      return acc;
-    }, {} as Record<string, any>);
+  const handleAddNode = useCallback(
+    (type: string) => {
+      const nodeConfig = nodeTypes[type];
+      if (!nodeConfig) return;
 
-    const newNode: Node = {
-      id: `${type}-${Date.now()}`,
-      type: 'customNode',
-      position: { 
-        x: Math.random() * 500, 
-        y: Math.random() * 500 
-      },
-      data: { 
-        type,
-        params: defaultParams,
-        handleParamChange: (paramName: string, value: any) => {
-          handleParamChange(newNode.id, paramName, value);
+      const defaultParams = nodeConfig.params.reduce((acc, param) => {
+        acc[param.name] = param.default;
+        return acc;
+      }, {} as Record<string, any>);
+
+      const newNode: Node = {
+        id: `${type}-${Date.now()}`,
+        type: "customNode",
+        position: {
+          x: Math.random() * 500,
+          y: Math.random() * 500,
         },
-      },
-    };
-    setNodes((nodes) => [...nodes, newNode]);
-  }, []);
-
-  const handleParamChange = useCallback((nodeId: string, paramName: string, value: any) => {
-    setNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === nodeId
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                params: { ...node.data.params, [paramName]: value },
-              },
-            }
-          : node
-      )
-    );
-  }, []);
+        data: {
+          type,
+          params: defaultParams,
+          handleParamChange, // Pass the function reference directly
+        },
+      };
+      setNodes((nodes) => [...nodes, newNode]);
+    },
+    [handleParamChange]
+  ); // Add handleParamChange to dependencies
 
   return {
     nodes,

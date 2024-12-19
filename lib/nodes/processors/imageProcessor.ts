@@ -220,7 +220,6 @@ async function applyThreshold(
 
   return new ImageData(data, imageData.width, imageData.height);
 }
-
 // TODO : edgeDetection after the walk
 
 function createGaussianKernel(size: number, sigma: number): number[][] {

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,18 +9,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { nodeTypes } from '@/lib/nodes/nodeTypes';
-import { Plus, Play, Save, Upload } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { nodeTypes } from "@/lib/nodes/nodeTypes";
+import { Plus, Play, Save, Upload, Loader2 } from "lucide-react";
 
 interface ToolbarProps {
   onAddNode: (type: string) => void;
   onProcess: () => void;
   onSave: () => void;
   onLoad: () => void;
+  isProcessing: boolean;
 }
 
-export function Toolbar({ onAddNode, onProcess, onSave, onLoad }: ToolbarProps) {
+export function Toolbar({
+  onAddNode,
+  onProcess,
+  onSave,
+  onLoad,
+  isProcessing,
+}: ToolbarProps) {
   // Group nodes by category
   const nodesByCategory = Object.entries(nodeTypes).reduce(
     (acc, [key, node]) => {
@@ -62,8 +69,17 @@ export function Toolbar({ onAddNode, onProcess, onSave, onLoad }: ToolbarProps) 
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button variant="default" size="sm" onClick={onProcess}>
-        <Play className="h-4 w-4 mr-2" />
+      <Button
+        variant="default"
+        size="sm"
+        onClick={onProcess}
+        disabled={isProcessing}
+      >
+        {isProcessing ? (
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+        ) : (
+          <Play className="h-4 w-4 mr-2" />
+        )}
         Process
       </Button>
 
