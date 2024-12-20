@@ -11,13 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { nodeTypes } from "@/lib/nodes/nodeTypes";
-import { Plus, Play, Save, Upload, Loader2 } from "lucide-react";
+import { Plus, Play, Save, Upload, Loader2, FilePlus } from "lucide-react";
 
 interface ToolbarProps {
   onAddNode: (type: string) => void;
   onProcess: () => void;
   onSave: () => void;
   onLoad: () => void;
+  onNewWorkflow: () => void;
+  onDeletedSelected: () => void;
   isProcessing: boolean;
 }
 
@@ -26,6 +28,8 @@ export function Toolbar({
   onProcess,
   onSave,
   onLoad,
+  onDeletedSelected,
+  onNewWorkflow,
   isProcessing,
 }: ToolbarProps) {
   // Group nodes by category
@@ -81,6 +85,14 @@ export function Toolbar({
           <Play className="h-4 w-4 mr-2" />
         )}
         Process
+      </Button>
+
+      <Button variant={"destructive"} size={"sm"} onClick={onDeletedSelected}>
+        Delete Node
+      </Button>
+
+      <Button variant={"outline"} size={"sm"} onClick={onNewWorkflow}>
+        <FilePlus className="h-4 w-4 mr-2" /> New Workflow
       </Button>
 
       <Button variant="outline" size="sm" onClick={onSave}>

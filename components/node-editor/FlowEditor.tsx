@@ -8,7 +8,7 @@ import { Toolbar } from "./Toolbar";
 import { UserProfile } from "./UserProfile";
 import { useNodeEditor } from "@/lib/hooks/useNodeEditor";
 import { useFlowPersistence } from "@/lib/hooks/useFlowPersistence";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast, useToast } from "@/hooks/use-toast";
 import { processImage } from "@/lib/nodes/processors/imageProcessor";
 import ComparisonDialog from "./ComparisonDialog";
@@ -40,6 +40,7 @@ export function FlowEditor() {
     inputImage: string | null;
     outputImage: string | null;
   }>({ inputImage: null, outputImage: null });
+  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
 
   const { toast } = useToast();
 
@@ -71,6 +72,10 @@ export function FlowEditor() {
     }),
     [handleParamChange]
   );
+
+  const onSelectedChange = useCallback((params: { nodes: Node[] }) => {
+    setSelectedNodes(params.nodes.map((node) => node.id));
+  }, []);
 
   // loading the data
   // todo : Finish dinner and work getting and setting the data
@@ -105,6 +110,53 @@ export function FlowEditor() {
     }
   }, [nodes, edges]);
 
+  const handleDeletedSelected = useCallback(() => {
+    if (selectedNodes.length === 0) {
+      toast({
+        title: "No nodes selected",
+        description: "Please select one or more noeds to delete",
+        variant: "default",
+      });
+
+      return;
+    }
+
+    setNodes((nodes) =>
+      nodes.filter((node) => !selectedNodes.includes(node.id))
+    );
+    setEdges((edges) =>
+      edges.filter(
+        (edge) =>
+          !selectedNodes.includes(edge.source) &&
+          !selectedNodes.includes(edge.target)
+      )
+    );
+    setSelectedNodes([]);
+
+    toast({
+      title : "Nodes Deleted",
+      description : `Successfully deleted ${selectedNodes.length} node`,
+      variant : "default",
+    })
+  }, [selectedNodes, setNodes, setEdges]);
+
+  const handleNewWorkFlow = useCallback(() => {
+    const confirmNew = window.confirm("Are you sure want to start a new workflow ? Make Sure to Save.")
+
+    if (confirmNew) {
+      setNodes([]);
+      setEdges([]);
+      setSelectedNodes([]);
+      localStorage.removeItem('flowState');
+
+      toast({
+        title : "New Workflow",
+        description : "Started a New Workflow",
+        variant : "default"
+      })
+    }
+  }, [setNodes, setEdges])
+
   const handleProcess = async () => {
     try {
       setIsProcessing(true);
@@ -122,7 +174,6 @@ export function FlowEditor() {
       }
 
       const result = await processImage(nodes, edges);
-
 
       setProcessedImages({
         inputImage: result.inputImage,
@@ -156,6 +207,7 @@ export function FlowEditor() {
           onConnect={onConnect}
           nodeTypes={nodeTypes}
           connectionLineComponent={ConnectionLine}
+          onSelectionChange={onSelectedChange}
           fitView
           className="bg-muted/50"
         >
@@ -165,6 +217,8 @@ export function FlowEditor() {
             <Toolbar
               onAddNode={handleAddNode}
               onProcess={handleProcess}
+              onNewWorkflow={handleNewWorkFlow}
+              onDeletedSelected={handleDeletedSelected}
               onSave={() => handleSave(nodes, edges)}
               onLoad={() =>
                 handleLoad((nodes, edges) => {
