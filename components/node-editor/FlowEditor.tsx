@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { ReactFlowProvider } from "reactflow";
 import { nodeTypes } from "./NodeTypes";
+import 'reactflow/dist/base.css'; 
 import { ConnectionLine } from "./ConnectionLine";
 import { Toolbar } from "./Toolbar";
 import { UserProfile } from "./UserProfile";
@@ -29,9 +30,7 @@ const Panel = dynamic(() => import("reactflow").then((mod) => mod.Panel), {
   ssr: false,
 });
 
-if (typeof window !== "undefined") {
-  import("reactflow/dist/style.css");
-}
+
 
 export function FlowEditor() {
   const [isProcessing, setIsProcessing] = useState(false);
