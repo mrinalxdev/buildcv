@@ -1,3 +1,5 @@
+'use client'
+
 import { FlowEditor } from "@/components/node-editor/FlowEditor";
 
 const Page = () => {

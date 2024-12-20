@@ -230,7 +230,6 @@ export function FlowEditor() {
             />
           </Panel>
         </ReactFlow>
-        <UserProfile />
         <ComparisonDialog
           isOpen={showComparison}
           onClose={() => setShowComparison(false)}
