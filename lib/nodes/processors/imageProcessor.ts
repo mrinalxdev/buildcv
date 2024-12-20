@@ -1,7 +1,6 @@
 "use client";
 
 import { NodeData, Connection } from "@/lib/types/node";
-import { Red_Hat_Text } from "next/font/google";
 
 interface ProcessingResult {
   inputImage: string | null;
@@ -17,29 +16,53 @@ export async function processImage(
 
   let inputImageUrl: string | null = null;
 
-  const inputNode = nodes.find((n) => n.type === "imageInput");
-  const outputNode = nodes.find(
-    (node) =>
-      node.type === "output" ||
-      !connections.some((edge) => edge.source === node.id)
+  console.log("All Nodes :", nodes.map(n => ({id : n.type, type: n.type, dataType : n.data?.type})))
+
+  const inputNode = nodes.find(
+    (n) => n.type === "customNode" && n.data.type === "imageInput"
   );
+  
+  const outputNode = nodes.find((node) => {
+    const hasNoOutgoingConnections = !connections.some(edge => edge.source === node.id);
+    const isOutputNode = node.type === "customNode" && node.data.type === "output";
+    
+    console.log(`Node ${node.id}:`, {
+      hasNoOutgoingConnections,
+      isOutputNode,
+      nodeType: node.type,
+      dataType: node.data?.type
+    });
+    
+    return hasNoOutgoingConnections || isOutputNode;
+  });
+
+  console.log("Found input node :", inputNode)
+  console.log("Found output Node :", outputNode)
 
   if (!inputNode || !outputNode) {
     throw new Error("Missing input or output node");
   }
 
+  console.log("All nodes:", nodes);
+  console.log("Found input node:", inputNode);
+  console.log("Found output node:", outputNode);
+
   inputImageUrl = inputNode.data.params.imageUrl;
 
   async function processNode(nodeId: string): Promise<ImageData | null> {
+    console.log("Processing node", nodeId)
     if (processedNodes.has(nodeId)) {
+      console.log("Node already processed :", nodeId)
       return nodeOutputs.get(nodeId) || null;
     }
 
     const node = nodes.find((n) => n.id === nodeId);
+    console.log("Current node:", node);
 
     if (!node) return null;
 
     const inputConnections = connections.filter((c) => c.target === nodeId);
+    console.log("Input connection for node :", inputConnections); 
 
     const inputs = await Promise.all(
       inputConnections.map(async (conn) => {
@@ -49,63 +72,77 @@ export async function processImage(
 
     //todo : after LUNCH : logic for processing the nodes
     let result: ImageData | null = null;
-    switch (node.type) {
-      case "imageInput":
-        result = await loadImageData(node.data.params.imageUrl);
-        break;
-      case "grayscale":
-        if (inputs[0]) {
-          result = await applyGrayScale(inputs[0]);
-        }
-        break;
-      case "blur":
-        if (inputs[0]) {
-          // logic for applyBlur After the meet
-          result = await applyBlur(inputs[0], node.data.params);
-        }
-        break;
-      case "threshold":
-        if (inputs[0]) {
-          result = await applyThreshold(inputs[0], node.data.params);
-        }
-        break;
-      
-      case 'edgeDetection':
-        if (inputs[0]){
-          result = await applyEdgeDetection(inputs[0], node.data.params)
-        }
-        break;
+
+    console.log(`Applying operation for node type : ${node.data.type}`)
+    try {
+      switch (node.data.type) {
+        case "imageInput":
+          result = await loadImageData(node.data.params.imageUrl);
+          break;
+        case "grayscale":
+          if (inputs[0]) {
+            result = await applyGrayScale(inputs[0]);
+          }
+          break;
+        case "blur":
+          if (inputs[0]) {
+            result = await applyBlur(inputs[0], node.data.params);
+          }
+          break;
+        case "threshold":
+          if (inputs[0]) {
+            result = await applyThreshold(inputs[0], node.data.params);
+          }
+          break;
+        case "edgeDetection":
+          if (inputs[0]) {
+            result = await applyEdgeDetection(inputs[0], node.data.params);
+          }
+          break;
+        case "output":
+          result = inputs[0]; // For output node, just pass through the input
+          break;
+      }
+    } catch (error) {
+      console.error(`Error processing node ${nodeId}:`, error);
     }
 
-    if (result){
+    console.log("Node processing result :", result ? "Success " : "Null")
+
+    if (result) {
       processedNodes.add(nodeId);
-      nodeOutputs.set(nodeId, result)
+      nodeOutputs.set(nodeId, result);
     }
 
     return result;
   }
 
   try {
-    const outputImageData = await processNode(outputNode.id)
+    const outputImageData = await processNode(outputNode.id);
+
+    console.log("Final Result", {
+      inputImageUrl : inputImageUrl,
+      outputImage: outputImageData ? "Generated" : "Null"
+    })
+
     return {
-      inputImage : inputImageUrl,
-      outputImage : outputImageData ? imageDataToUrl(outputImageData) : null, 
-    }
+      inputImage: inputImageUrl,
+      outputImage: outputImageData ? imageDataToUrl(outputImageData) : null,
+    };
   } catch (error) {
-    console.error('Processing error :', error);
-    return { inputImage : inputImageUrl, outputImage : null}
+    console.error("Processing error :", error);
+    return { inputImage: inputImageUrl, outputImage: null };
   }
 }
 
-function imageDataToUrl(imageData: ImageData) : string {
-  const canvas = document.createElement('canvas');
+function imageDataToUrl(imageData: ImageData): string {
+  const canvas = document.createElement("canvas");
   canvas.width = imageData.width;
   canvas.height = imageData.height;
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   ctx?.putImageData(imageData, 0, 0);
-  return canvas.toDataURL('image/png')
-
+  return canvas.toDataURL("image/png");
 }
 
 // from here there will be all the helper function
@@ -151,16 +188,16 @@ async function applyEdgeDetection(
 
     // TODO : Logic for gradients after the meet
     const data = new Uint8ClampedArray(imageData.data);
-    for (let i = 0; i < data.length; i += 4){
+    for (let i = 0; i < data.length; i += 4) {
       const magnitude = Math.sqrt(
         gradientX.data[i] * gradientX.data[i] +
-        gradientY.data[i] * gradientY.data[i]
+          gradientY.data[i] * gradientY.data[i]
       );
       data[i] = data[i + 1] = data[i + 2] = magnitude > threshold1 ? 255 : 0;
     }
-    return new ImageData(data, imageData.width, imageData.height)
+    return new ImageData(data, imageData.width, imageData.height);
   } else {
-    return applyCanny(grayscaleData, threshold1, threshold2)
+    return applyCanny(grayscaleData, threshold1, threshold2);
   }
 }
 

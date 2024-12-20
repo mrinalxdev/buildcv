@@ -3,6 +3,7 @@ export interface NodeData {
   type: string;
   position: { x: number; y: number };
   data: {
+    type: any;
     params: Record<string, any>;
     preview?: string;
   };

@@ -58,19 +58,19 @@ export function FlowEditor() {
   const { handleSave, handleLoad, saveToLocalStorage, loadFromLocalStorage } =
     useFlowPersistence();
 
-    const customNodeTypes = useMemo(
-      () => ({
-        customNode: (props: any) => ({
-          ...props,
-          data: {
-            ...props.data,
-            handleParamChange: (nodeId: string, paramName: string, value: any) =>
-              handleParamChange(nodeId, paramName, value),
-          },
-        }),
+  const customNodeTypes = useMemo(
+    () => ({
+      customNode: (props: any) => ({
+        ...props,
+        data: {
+          ...props.data,
+          handleParamChange: (nodeId: string, paramName: string, value: any) =>
+            handleParamChange(nodeId, paramName, value),
+        },
       }),
-      [handleParamChange]
-    );
+    }),
+    [handleParamChange]
+  );
 
   // loading the data
   // todo : Finish dinner and work getting and setting the data
@@ -109,18 +109,29 @@ export function FlowEditor() {
     try {
       setIsProcessing(true);
 
-      const inputNode = nodes.find((n) => n.type === "imageInput");
-      if (!inputNode) {
-        throw new Error("No input node found in the worflow");
-      }
-      if (!inputNode.data.params.imageurl) {
-        throw new Error("Please provide an input image URL");
+      const inputNode = nodes.find(
+        (n) => n.type === "customNode" && n.data.type === "imageInput"
+      );
+
+      console.log("Nodes before processing:", nodes);
+      console.log("Edges before processing:", edges);
+      console.log("Input node:", inputNode);
+
+      if (!inputNode?.data?.params?.imageUrl) {
+        throw new Error("No input node found in the workflow");
       }
 
       const result = await processImage(nodes, edges);
-      setProcessedImages(result);
+
+
+      setProcessedImages({
+        inputImage: result.inputImage,
+        outputImage: result.outputImage,
+      });
+
       setShowComparison(true);
     } catch (error) {
+      console.error("Processing error:", error);
       toast({
         title: "Processing Error",
         description:
