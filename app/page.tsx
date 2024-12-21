@@ -18,10 +18,10 @@ export default function Home() {
             <Link href="/about" className="px-3">
               About
             </Link>
-            <Link href="/demo" className="px-3">
+            <Link href="https://www.youtube.com/watch?v=VOpgOSk0VtQ" className="px-3">
               Demo
             </Link>
-            <Link href="/Contact" className="px-3">
+            <Link href="https://twitter.com/Hi_Mrinal" className="px-3">
               Contact
             </Link>
           </div>
