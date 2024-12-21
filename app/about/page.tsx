@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function SimpleSaasPage() {
   return (
@@ -22,6 +24,10 @@ export default function SimpleSaasPage() {
           previews, dynamic parameter adjustments, and seamless integration of
           multiple algorithmic steps.
         </p>
+
+        <Link href={"/"}>
+          <Button>Back to workflows</Button>
+        </Link>
       </div>
     </div>
   );
